@@ -16,7 +16,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package cc.polyfrost.polysprint.tweaker
+package org.polyfrost.polysprint.tweaker
 
 import cc.polyfrost.oneconfig.utils.Notifications
 import net.minecraftforge.fml.relauncher.CoreModManager
@@ -40,7 +40,7 @@ class MixinPlugin : IMixinConfigPlugin {
     override fun getRefMapperConfig(): String? = null
 
     override fun shouldApplyMixin(targetClassName: String, mixinClassName: String): Boolean {
-        return if (mixinClassName.startsWith("cc.polyfrost.polysprint.mixins.playerapi.")) {
+        return if (mixinClassName.startsWith("org.polyfrost.polysprint.mixins.playerapi.")) {
             hasPlayerAPI
         } else true
     }

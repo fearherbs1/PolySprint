@@ -1,7 +1,7 @@
 {
   "compatibilityLevel": "JAVA_8",
-  "package": "cc.polyfrost.polysprint.mixins",
-  "plugin": "cc.polyfrost.polysprint.tweaker.MixinPlugin",
+  "package": "org.polyfrost.polysprint.mixins",
+  "plugin": "org.polyfrost.polysprint.tweaker.MixinPlugin",
   "refmap": "mixins.polysprint.refmap.json",
   "mixins": [
     "MixinEntityPlayerSP",

@@ -16,7 +16,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package cc.polyfrost.polysprint.core
+package org.polyfrost.polysprint.core
 
 import cc.polyfrost.oneconfig.config.Config
 import cc.polyfrost.oneconfig.config.annotations.HUD
@@ -29,8 +29,8 @@ import cc.polyfrost.oneconfig.config.data.ModType
 import cc.polyfrost.oneconfig.config.migration.VigilanceMigrator
 import cc.polyfrost.oneconfig.hud.TextHud
 import cc.polyfrost.oneconfig.libs.universal.UKeyboard
-import cc.polyfrost.polysprint.PolySprint
-import cc.polyfrost.polysprint.core.PolySprintConfig.ToggleSprintHud.DisplayState.Companion.activeDisplay
+import org.polyfrost.polysprint.PolySprint
+import org.polyfrost.polysprint.core.PolySprintConfig.ToggleSprintHud.DisplayState.Companion.activeDisplay
 import net.minecraft.entity.player.EntityPlayer
 import java.io.File
 

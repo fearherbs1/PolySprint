@@ -16,11 +16,11 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package cc.polyfrost.polysprint.core
+package org.polyfrost.polysprint.core
 
 import cc.polyfrost.oneconfig.libs.universal.UKeyboard
 import cc.polyfrost.oneconfig.libs.universal.UScreen
-import cc.polyfrost.polysprint.PolySprint.gameSettings
+import org.polyfrost.polysprint.PolySprint.gameSettings
 import net.minecraft.client.settings.KeyBinding
 import org.lwjgl.input.Mouse
 

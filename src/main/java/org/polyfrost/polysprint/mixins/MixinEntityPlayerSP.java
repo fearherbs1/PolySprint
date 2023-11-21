@@ -16,16 +16,16 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package cc.polyfrost.polysprint.mixins;
+package org.polyfrost.polysprint.mixins;
 
-import cc.polyfrost.polysprint.core.UtilsKt;
 import com.mojang.authlib.GameProfile;
-import cc.polyfrost.polysprint.core.PolySprintConfig;
+import org.polyfrost.polysprint.core.PolySprintConfig;
 import net.minecraft.client.entity.AbstractClientPlayer;
 import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.client.settings.KeyBinding;
 import net.minecraft.world.World;
 import org.objectweb.asm.Opcodes;
+import org.polyfrost.polysprint.core.UtilsKt;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Redirect;

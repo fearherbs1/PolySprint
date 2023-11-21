@@ -15,13 +15,13 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-package cc.polyfrost.polysprint
+package org.polyfrost.polysprint
 
 import cc.polyfrost.oneconfig.libs.universal.UMinecraft
 import cc.polyfrost.oneconfig.utils.commands.CommandManager
-import cc.polyfrost.polysprint.commands.PolySprintCommand
-import cc.polyfrost.polysprint.core.PolySprintConfig
-import cc.polyfrost.polysprint.core.checkKeyCode
+import org.polyfrost.polysprint.commands.PolySprintCommand
+import org.polyfrost.polysprint.core.PolySprintConfig
+import org.polyfrost.polysprint.core.checkKeyCode
 import net.minecraftforge.common.MinecraftForge
 import net.minecraftforge.fml.common.Mod
 import net.minecraftforge.fml.common.event.FMLInitializationEvent

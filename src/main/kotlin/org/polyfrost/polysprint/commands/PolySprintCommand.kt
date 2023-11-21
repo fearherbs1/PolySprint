@@ -15,11 +15,11 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-package cc.polyfrost.polysprint.commands
+package org.polyfrost.polysprint.commands
 
 import cc.polyfrost.oneconfig.utils.commands.annotations.Command
 import cc.polyfrost.oneconfig.utils.commands.annotations.Main
-import cc.polyfrost.polysprint.core.PolySprintConfig
+import org.polyfrost.polysprint.core.PolySprintConfig
 
 @Command("polysprint", aliases = ["sts", "togglesprint", "togglesneak", "simpletogglesprint"])
 class PolySprintCommand {
