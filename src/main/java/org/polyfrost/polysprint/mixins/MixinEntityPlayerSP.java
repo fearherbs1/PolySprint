@@ -44,6 +44,6 @@ public abstract class MixinEntityPlayerSP extends AbstractClientPlayer {
 
     @Redirect(method = "onLivingUpdate", at = @At(value = "FIELD", target = "Lnet/minecraft/client/entity/EntityPlayerSP;onGround:Z", ordinal = 0, opcode = Opcodes.GETFIELD))
     private boolean redirectWTap(EntityPlayerSP instance) {
-        return !PolySprintConfig.INSTANCE.getDisableWTapSprint();
+        return !PolySprintConfig.INSTANCE.enabled || !PolySprintConfig.INSTANCE.getDisableWTapSprint();
     }
 }
