@@ -1,5 +1,5 @@
 # PolySprint
-![OneConfig Supported](https://i.imgur.com/pFqMYWp.png)
+![Compact Powered by OneConfig](https://polyfrost.org/img/compact_vector.svg)
 ![Dev Workflow Status](https://img.shields.io/github/v/release/Polyfrost/PolySprint.svg?style=for-the-badge&color=1452cc&label=release)
 
 A simple yet incredibly functional toggle-sprint mod with a wide array of different features and customization
