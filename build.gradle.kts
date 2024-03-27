@@ -1,182 +1,194 @@
-/*
- *   SimpleToggleSprint
- *   Copyright (C) 2021  My-Name-Is-Jeff
- *
- *   This program is free software: you can redistribute it and/or modify
- *   it under the terms of the GNU Affero General Public License as published by
- *   the Free Software Foundation, either version 3 of the License, or
- *   (at your option) any later version.
- *
- *   This program is distributed in the hope that it will be useful,
- *   but WITHOUT ANY WARRANTY; without even the implied warranty of
- *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *   GNU Affero General Public License for more details.
- *
- *   You should have received a copy of the GNU Affero General Public License
- *   along with this program.  If not, see <https://www.gnu.org/licenses/>.
- */
+@file:Suppress("UnstableApiUsage", "PropertyName")
 
+import org.polyfrost.gradle.util.noServerRunConfigs
 import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
-import net.fabricmc.loom.task.RemapJarTask
-import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
+// Adds support for kotlin, and adds the Polyfrost Gradle Toolkit
+// which we use to prepare the environment.
 plugins {
-    kotlin("jvm") version "1.9.23"
-    kotlin("plugin.serialization") version "1.9.23"
-    id("com.github.johnrengelman.shadow") version "8.1.1"
-    id("net.kyori.blossom") version "2.1.0"
-    id("io.github.juuxel.loom-quiltflower") version "1.10.0"
-    id("gg.essential.loom") version "1.3.12"
-    id("gg.essential.defaults") version "0.3.0"
-    idea
-    id("org.jetbrains.gradle.plugin.idea-ext") version "1.1.7"
+    kotlin("jvm")
+    id("org.polyfrost.multi-version")
+    id("org.polyfrost.defaults.repo")
+    id("org.polyfrost.defaults.java")
+    id("org.polyfrost.defaults.loom")
+    id("com.github.johnrengelman.shadow")
+    id("net.kyori.blossom") version "1.3.1"
+    id("signing")
+    java
 }
 
-version = "2.3.0"
-group = "mynameisjeff.simpletogglesprint"
+// Gets the mod name, version and id from the `gradle.properties` file.
+val mod_name: String by project
+val mod_version: String by project
+val mod_id: String by project
+val mod_archives_name: String by project
 
-quiltflower {
-    quiltflowerVersion.set("1.9.0")
+// Sets up the variables for when we preprocess to other Minecraft versions.
+preprocess {
+    vars.put("MODERN", if (project.platform.mcMinor >= 16) 1 else 0)
 }
 
+// Replaces the variables in `ExampleMod.java` to the ones specified in `gradle.properties`.
+blossom {
+    replaceToken("@VER@", mod_version)
+    replaceToken("@NAME@", mod_name)
+    replaceToken("@ID@", mod_id)
+}
+
+// Sets the mod version to the one specified in `gradle.properties`. Make sure to change this following semver!
+version = mod_version
+// Sets the group, make sure to change this to your own. It can be a website you own backwards or your GitHub username.
+// e.g. com.github.<your username> or com.<your domain>
+group = "org.polyfrost"
+
+// Sets the name of the output jar (the one you put in your mods folder and send to other people)
+// It outputs all versions of the mod into the `build` directory.
+base {
+    archivesName.set("$mod_archives_name-$platform")
+}
+
+// Configures the Polyfrost Loom, our plugin fork to easily set up the programming environment.
 loom {
-    silentMojangMappingsLicense()
-    runConfigs {
-        getByName("client") {
-            isIdeConfigGenerated = true
-            property("elementa.dev", "true")
-            property("elementa.debug", "true")
-            property("elementa.invalid_usage", "warn")
-            property("mixin.debug.verbose", "true")
-            property("mixin.debug.export", "true")
-            property("mixin.dumpTargetOnFailure", "true")
-            property("fml.debugAccessTransformer", "true")
-            property("fml.remappingDebug", "true")
-            property("fml.remappingDebug.dumpFieldMaps", "true")
-            property("fml.remappingDebug.dumpMethodMaps", "true")
-            property("fml.coreMods.load", "mynameisjeff.simpletogglesprint.tweaker.FMLLoadingPlugin")
-            programArgs("--tweakClass", "gg.essential.loader.stage0.EssentialSetupTweaker")
-            programArgs("--mixin", "mixins.simpletogglesprint.json")
+    // Removes the server configs from IntelliJ IDEA, leaving only client runs.
+    // If you're developing a server-side mod, you can remove this line.
+    noServerRunConfigs()
+
+    // Adds the tweak class if we are building legacy version of forge as per the documentation (https://docs.polyfrost.org)
+    if (project.platform.isLegacyForge) {
+        runConfigs {
+            "client" {
+                programArgs("--tweakClass", "cc.polyfrost.oneconfig.loader.stage0.LaunchWrapperTweaker")
+                property("mixin.debug.export", "true")
+            }
         }
-        remove(getByName("server"))
     }
-    forge {
-        mixinConfig("mixins.simpletogglesprint.json")
-        accessTransformer("src/main/resources/META-INF/accesstransformer.cfg")
+    // Configures the mixins if we are building for forge, useful for when we are dealing with cross-platform projects.
+    if (project.platform.isForge) {
+        forge {
+            mixinConfig("mixins.${mod_id}.json")
+        }
     }
-    mixin {
-        defaultRefmapName = "mixins.simpletogglesprint.refmap.json"
-    }
+    // Configures the name of the mixin "refmap" using an experimental loom api.
+    mixin.defaultRefmapName.set("mixins.${mod_id}.refmap.json")
 }
 
-repositories {
-    mavenLocal()
-    mavenCentral()
-    maven("https://repo.spongepowered.org/repository/maven-public/")
-    maven("https://repo.sk1er.club/repository/maven-public/")
-    maven("https://repo.sk1er.club/repository/maven-releases/")
-    maven("https://jitpack.io")
-}
-
-val shadowMe: Configuration by configurations.creating {
+// Creates the shade/shadow configuration, so we can include libraries inside our mod, rather than having to add them separately.
+val shade: Configuration by configurations.creating {
     configurations.implementation.get().extendsFrom(this)
 }
 
-dependencies {
-    shadowMe(annotationProcessor("io.github.llamalad7:mixinextras-common:0.3.5")!!)
-    annotationProcessor("org.spongepowered:mixin:0.8.5:processor")
-    compileOnly("org.spongepowered:mixin:0.8.5")
-
-
-    shadowMe("gg.essential:loader-launchwrapper:1.2.2")
-    implementation("gg.essential:essential-1.8.9-forge:14616+g169bd9af6a")
-}
-
+// Configures the output directory for when building from the `src/resources` directory.
 sourceSets {
     main {
-        output.setResourcesDir(layout.buildDirectory.file("/classes/kotlin/main"))
-        blossom {
-            javaSources {
-                property("version", project.version.toString())
-            }
-            resources {
-                property("version", project.version.toString())
-                property("mcversion", "1.8.9")
-            }
-        }
+        output.setResourcesDir(java.classesDirectory)
     }
+}
 
+// Adds the Polyfrost maven repository so that we can get the libraries necessary to develop the mod.
+repositories {
+    maven("https://repo.polyfrost.org/releases")
+}
+
+// Configures the libraries/dependencies for your mod.
+dependencies {
+    // Adds the OneConfig library, so we can develop with it.
+    modCompileOnly("cc.polyfrost:oneconfig-$platform:0.2.1-alpha+")
+
+    modRuntimeOnly("me.djtheredstoner:DevAuth-${if (platform.isFabric) "fabric" else if (platform.isLegacyForge) "forge-legacy" else "forge-latest"}:1.1.2")
+
+    // If we are building for legacy forge, includes the launch wrapper with `shade` as we configured earlier.
+    if (platform.isLegacyForge) {
+        compileOnly("org.spongepowered:mixin:0.7.11-SNAPSHOT")
+        shade("cc.polyfrost:oneconfig-wrapper-launchwrapper:1.0.0-beta+")
+    }
 }
 
 tasks {
+    // Processes the `src/resources/mcmod.info or fabric.mod.json` and replaces
+    // the mod id, name and version with the ones in `gradle.properties`
     processResources {
-        dependsOn(compileJava)
-    }
-    named<Jar>("jar") {
-        archiveBaseName.set("SimpleToggleSprint")
-
-        manifest {
-            attributes(
+        inputs.property("id", mod_id)
+        inputs.property("name", mod_name)
+        val java = if (project.platform.mcMinor >= 18) {
+            17 // If we are playing on version 1.18, set the java version to 17
+        } else {
+            // Else if we are playing on version 1.17, use java 16.
+            if (project.platform.mcMinor == 17)
+                16
+            else
+                8 // For all previous versions, we **need** java 8 (for Forge support).
+        }
+        val compatLevel = "JAVA_${java}"
+        inputs.property("java", java)
+        inputs.property("java_level", compatLevel)
+        inputs.property("version", mod_version)
+        inputs.property("mcVersionStr", project.platform.mcVersionStr)
+        filesMatching(listOf("mcmod.info", "mixins.${mod_id}.json", "mods.toml")) {
+            expand(
                 mapOf(
-                    "FMLAT" to "accesstransformer.cfg",
-                    "FMLCorePlugin" to "mynameisjeff.simpletogglesprint.tweaker.FMLLoadingPlugin",
-                    "FMLCorePluginContainsFMLMod" to true,
-                    "ForceLoadAsMod" to true,
-                    "MixinConfigs" to "mixins.simpletogglesprint.json",
-                    "ModSide" to "CLIENT",
-                    "ModType" to "FML",
-                    "TweakClass" to "gg.essential.loader.stage0.EssentialSetupTweaker",
-                    "TweakOrder" to "0"
+                    "id" to mod_id,
+                    "name" to mod_name,
+                    "java" to java,
+                    "java_level" to compatLevel,
+                    "version" to mod_version,
+                    "mcVersionStr" to project.platform.mcVersionStr
                 )
             )
         }
+        filesMatching("fabric.mod.json") {
+            expand(
+                mapOf(
+                    "id" to mod_id,
+                    "name" to mod_name,
+                    "java" to java,
+                    "java_level" to compatLevel,
+                    "version" to mod_version,
+                    "mcVersionStr" to project.platform.mcVersionStr.substringBeforeLast(".") + ".x"
+                )
+            )
+        }
+    }
 
+    // Configures the resources to include if we are building for forge or fabric.
+    withType(Jar::class.java) {
+        if (project.platform.isFabric) {
+            exclude("mcmod.info", "mods.toml")
+        } else {
+            exclude("fabric.mod.json")
+            if (project.platform.isLegacyForge) {
+                exclude("mods.toml")
+            } else {
+                exclude("mcmod.info")
+            }
+        }
+    }
+
+    // Configures our shadow/shade configuration, so we can
+    // include some dependencies within our mod jar file.
+    named<ShadowJar>("shadowJar") {
+        archiveClassifier.set("dev") // TODO: machete gets confused by the `dev` prefix.
+        configurations = listOf(shade)
+        duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+    }
+
+    remapJar {
+        inputFile.set(shadowJar.get().archiveFile)
+        archiveClassifier.set("")
+    }
+
+    jar {
+        // Sets the jar manifest attributes.
+        if (platform.isLegacyForge) {
+            manifest.attributes += mapOf(
+                "ModSide" to "CLIENT", // We aren't developing a server-side mod, so this is fine.
+                "ForceLoadAsMod" to true, // We want to load this jar as a mod, so we force Forge to do so.
+                "TweakOrder" to "0", // Makes sure that the OneConfig launch wrapper is loaded as soon as possible.
+                "MixinConfigs" to "mixins.${mod_id}.json", // We want to use our mixin configuration, so we specify it here.
+                "TweakClass" to "cc.polyfrost.oneconfig.loader.stage0.LaunchWrapperTweaker" // Loads the OneConfig launch wrapper.
+            )
+        }
+        dependsOn(shadowJar)
+        archiveClassifier.set("")
         enabled = false
     }
-    named<ShadowJar>("shadowJar") {
-        archiveFileName.set(jar.get().archiveFileName)
-        archiveClassifier.set("dev")
-        duplicatesStrategy = DuplicatesStrategy.EXCLUDE
-        configurations = listOf(shadowMe)
-
-        relocate("com.llamalad7.mixinextras", "mynameisjeff.simpletogglesprint.mixinextras")
-
-        exclude(
-            "**/LICENSE.md",
-            "**/LICENSE.txt",
-            "**/LICENSE",
-            "**/NOTICE",
-            "**/NOTICE.txt",
-            "pack.mcmeta",
-            "dummyThing",
-            "**/module-info.class",
-            "META-INF/proguard/**",
-            "META-INF/maven/**",
-            "META-INF/versions/**",
-            "META-INF/com.android.tools/**",
-            "fabric.mod.json"
-        )
-        mergeServiceFiles()
-    }
-    named<RemapJarTask>("remapJar") {
-        inputFile.set(shadowJar.get().archiveFile)
-    }
-    withType<AbstractArchiveTask> {
-        isPreserveFileTimestamps = false
-        isReproducibleFileOrder = true
-    }
-    withType<JavaCompile> {
-        options.encoding = "UTF-8"
-    }
-    withType<KotlinCompile> {
-        kotlinOptions {
-            jvmTarget = "1.8"
-            freeCompilerArgs = listOf("-Xjvm-default=all", "-Xbackend-threads=0")
-        }
-        kotlinDaemonJvmArguments.set(listOf("-Xmx2G"))
-    }
-}
-
-kotlin {
-    jvmToolchain(8)
 }
