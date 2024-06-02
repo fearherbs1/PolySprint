@@ -19,20 +19,18 @@
 package org.polyfrost.polysprint.core
 
 import cc.polyfrost.oneconfig.config.Config
-import cc.polyfrost.oneconfig.config.annotations.HUD
-import cc.polyfrost.oneconfig.config.annotations.KeyBind
-import cc.polyfrost.oneconfig.config.annotations.Switch
-import cc.polyfrost.oneconfig.config.annotations.Text
+import cc.polyfrost.oneconfig.config.annotations.*
 import cc.polyfrost.oneconfig.config.core.OneKeyBind
 import cc.polyfrost.oneconfig.config.data.Mod
 import cc.polyfrost.oneconfig.config.data.ModType
 import cc.polyfrost.oneconfig.config.migration.VigilanceMigrator
 import cc.polyfrost.oneconfig.hud.TextHud
 import cc.polyfrost.oneconfig.libs.universal.UKeyboard
+import net.minecraft.entity.player.EntityPlayer
 import org.polyfrost.polysprint.PolySprint
 import org.polyfrost.polysprint.core.PolySprintConfig.ToggleSprintHud.DisplayState.Companion.activeDisplay
-import net.minecraft.entity.player.EntityPlayer
 import java.io.File
+
 
 object PolySprintConfig : Config(
     Mod(
@@ -91,6 +89,20 @@ object PolySprintConfig : Config(
     )
     var keybindToggleSneakKey = OneKeyBind(UKeyboard.KEY_NONE)
 
+    @Switch(
+        name = "Fly Boost",
+        subcategory = "Fly Boost"
+    )
+    var toggleFlyBoost = false
+
+    @Slider(
+        name = "Fly Boost Amount",
+        subcategory = "Fly Boost",
+        min = 1.0F,
+        max = 10.0F
+    )
+    var flyBoostAmount = 4.0F
+
     @HUD(
         name = "HUD",
         subcategory = "HUD"
@@ -101,8 +113,10 @@ object PolySprintConfig : Config(
         initialize()
         addDependency("keybindToggleSprint", "toggleSprint")
         addDependency("keybindToggleSneak", "toggleSneak")
+        addDependency("flyBoostAmount", "toggleFlyBoost")
         addDependency("keybindToggleSprintKey", "keybindToggleSprint")
         addDependency("keybindToggleSneakKey", "keybindToggleSneak")
+
         registerKeyBind(keybindToggleSprintKey) {
             if (keybindToggleSprint) {
                 if (enabled && toggleSprint && !PolySprint.sprintHeld) {
@@ -124,6 +138,7 @@ object PolySprintConfig : Config(
     }
 
     class ToggleSprintHud : TextHud(true, 0, 1080 - 19) {
+
         @Switch(name = "Brackets")
         private var brackets = true
 
@@ -132,21 +147,21 @@ object PolySprintConfig : Config(
             category = "Display",
             subcategory = "Text"
         )
-        var descendingHeld = "Descending (key held)"
+        var descendingHeld = "Descending (Key Held)"
 
         @Text(
             name = "Descending Toggled Text",
             category = "Display",
             subcategory = "Text"
         )
-        var descendingToggled = "Descending (toggled)"
+        var descendingToggled = "Descending (Toggled)"
 
         @Text(
             name = "Descending Text",
             category = "Display",
             subcategory = "Text"
         )
-        var descending = "Descending (vanilla)"
+        var descending = "Descending (Vanilla)"
 
         @Text(
             name = "Flying Text",
@@ -167,42 +182,42 @@ object PolySprintConfig : Config(
             category = "Display",
             subcategory = "Text"
         )
-        var sneakHeld = "Sneaking (key held)"
+        var sneakHeld = "Sneaking (Key Held)"
 
         @Text(
             name = "Sneak Toggle Text",
             category = "Display",
             subcategory = "Text"
         )
-        var sneakToggle = "Sneaking (toggled)"
+        var sneakToggle = "Sneaking (Toggled)"
 
         @Text(
             name = "Sneaking Text",
             category = "Display",
             subcategory = "Text"
         )
-        var sneak = "Sneaking (vanilla)"
+        var sneak = "Sneaking (Vanilla)"
 
         @Text(
             name = "Sprint Held Text",
             category = "Display",
             subcategory = "Text"
         )
-        var sprintHeld = "Sprinting (key held)"
+        var sprintHeld = "Sprinting (Key Held)"
 
         @Text(
             name = "Sprint Toggle Text",
             category = "Display",
             subcategory = "Text"
         )
-        var sprintToggle = "Sprinting (toggled)"
+        var sprintToggle = "Sprinting (Toggled)"
 
         @Text(
             name = "Sprinting Text",
             category = "Display",
             subcategory = "Text"
         )
-        var sprint = "Sprinting (vanilla)"
+        var sprint = "Sprinting (Vanilla)"
 
         override fun getLines(lines: MutableList<String>, example: Boolean) {
             getCompleteText(activeDisplay)?.let { lines.add(it) }
@@ -214,7 +229,7 @@ object PolySprintConfig : Config(
             DESCENDINGHELD({ descendingHeld }, { it.capabilities.isFlying && it.isSneaking && PolySprint.sneakHeld }),
             DESCENDINGTOGGLED({ descendingToggled }, { it.capabilities.isFlying && PolySprintConfig.enabled && toggleSprint && toggleSneakState }),
             DESCENDING({ descending }, { it.capabilities.isFlying && it.isSneaking }),
-            FLYING({ flying }, { it.capabilities.isFlying }),
+            FLYING({ flying }, { it.capabilities.isFlying}),
             RIDING({ riding }, { it.isRiding }),
             SNEAKHELD({ sneakHeld }, { it.isSneaking && PolySprint.sneakHeld }),
             TOGGLESNEAK({ sneakToggle }, { PolySprintConfig.enabled && toggleSneak && toggleSneakState }),
@@ -235,4 +250,5 @@ object PolySprintConfig : Config(
             }
         }
     }
+
 }

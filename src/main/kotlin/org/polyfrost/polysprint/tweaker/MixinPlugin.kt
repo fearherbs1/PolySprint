@@ -25,6 +25,7 @@ import org.spongepowered.asm.mixin.extensibility.IMixinConfigPlugin
 import org.spongepowered.asm.mixin.extensibility.IMixinInfo
 
 class MixinPlugin : IMixinConfigPlugin {
+
     private var hasPlayerAPI = false
     override fun onLoad(mixinPackage: String) {
         for ((key, value) in CoreModManager.getTransformers()) {
@@ -65,4 +66,5 @@ class MixinPlugin : IMixinConfigPlugin {
         mixinInfo: IMixinInfo
     ) {
     }
+
 }

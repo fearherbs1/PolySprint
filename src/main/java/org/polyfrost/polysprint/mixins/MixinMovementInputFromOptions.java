@@ -28,8 +28,16 @@ import org.spongepowered.asm.mixin.injection.Redirect;
 
 @Mixin(MovementInputFromOptions.class)
 public abstract class MixinMovementInputFromOptions extends MovementInput {
-    @Redirect(method = "updatePlayerMoveState", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/settings/KeyBinding;isKeyDown()Z"))
+
+    @Redirect(
+            method = "updatePlayerMoveState",
+            at = @At(
+                    value = "INVOKE",
+                    target = "Lnet/minecraft/client/settings/KeyBinding;isKeyDown()Z"
+            )
+    )
     private boolean setSneakState(KeyBinding keyBinding) {
         return UtilsKt.shouldSetSneak(keyBinding);
     }
+
 }
