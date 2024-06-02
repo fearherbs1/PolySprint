@@ -34,7 +34,7 @@ fun shouldSetSneak(keyBinding: KeyBinding): Boolean {
 }
 
 fun shouldFlyBoost(): Boolean {
-    return (gameSettings.keyBindSprint.isKeyDown || UScreen.currentScreen == null) && PolySprintConfig.enabled && PolySprintConfig.toggleFlyBoost && player!!.capabilities.isFlying && player!!.capabilities.isCreativeMode
+    return gameSettings.keyBindSprint.isKeyDown && PolySprintConfig.enabled && PolySprintConfig.toggleFlyBoost && player!!.capabilities.isFlying && player!!.capabilities.isCreativeMode
 }
 
 fun checkKeyCode(keyCode: Int) = if (keyCode > 0) UKeyboard.isKeyDown(keyCode) else Mouse.isButtonDown(
