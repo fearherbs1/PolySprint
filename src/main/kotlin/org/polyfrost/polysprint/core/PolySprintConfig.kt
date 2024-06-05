@@ -25,8 +25,8 @@ import cc.polyfrost.oneconfig.config.data.Mod
 import cc.polyfrost.oneconfig.config.data.ModType
 import cc.polyfrost.oneconfig.config.migration.VigilanceMigrator
 import cc.polyfrost.oneconfig.events.EventManager
-import cc.polyfrost.oneconfig.events.event.RenderEvent
 import cc.polyfrost.oneconfig.events.event.Stage
+import cc.polyfrost.oneconfig.events.event.TickEvent
 import cc.polyfrost.oneconfig.hud.TextHud
 import cc.polyfrost.oneconfig.libs.eventbus.Subscribe
 import cc.polyfrost.oneconfig.libs.universal.UKeyboard
@@ -257,7 +257,7 @@ object PolySprintConfig : Config(
         }
 
         @Subscribe
-        fun onTick(e: RenderEvent) {
+        fun onTick(e: TickEvent) {
             if (e.stage == Stage.START) {
                 flyBoost = if (shouldFlyBoost()) {
                     "$flying (${flyBoostAmount.toBigDecimal().setScale(2, RoundingMode.HALF_EVEN)}$flyBoostText)"
