@@ -24,12 +24,17 @@ import cc.polyfrost.oneconfig.config.core.OneKeyBind
 import cc.polyfrost.oneconfig.config.data.Mod
 import cc.polyfrost.oneconfig.config.data.ModType
 import cc.polyfrost.oneconfig.config.migration.VigilanceMigrator
+import cc.polyfrost.oneconfig.events.EventManager
+import cc.polyfrost.oneconfig.events.event.RenderEvent
+import cc.polyfrost.oneconfig.events.event.Stage
 import cc.polyfrost.oneconfig.hud.TextHud
+import cc.polyfrost.oneconfig.libs.eventbus.Subscribe
 import cc.polyfrost.oneconfig.libs.universal.UKeyboard
 import net.minecraft.entity.player.EntityPlayer
 import org.polyfrost.polysprint.PolySprint
 import org.polyfrost.polysprint.core.PolySprintConfig.ToggleSprintHud.DisplayState.Companion.activeDisplay
 import java.io.File
+import java.math.RoundingMode
 
 
 object PolySprintConfig : Config(
@@ -142,6 +147,25 @@ object PolySprintConfig : Config(
         @Switch(name = "Brackets")
         private var brackets = true
 
+        @Button(
+            name = "Reset Text on ALL HUDs",
+            text = "Reset"
+        )
+        var resetText = Runnable {
+            descendingHeld = "Descending (Key Held)"
+            descendingToggled = "Descending (Toggled)"
+            descending = "Descending (Vanilla)"
+            flying = "Flying"
+            flyBoostText = "x boost"
+            riding = "Riding"
+            sneakHeld = "Sneaking (Key Held)"
+            sneakToggle = "Sneaking (Toggled)"
+            sneak = "Sneaking (Vanilla)"
+            sprintHeld = "Sprinting (Key Held)"
+            sprintToggle = "Sprinting (Toggled)"
+            sprint = "Sprinting (Vanilla)"
+        }
+
         @Text(
             name = "Descending Held Text",
             category = "Display",
@@ -169,6 +193,15 @@ object PolySprintConfig : Config(
             subcategory = "Text"
         )
         var flying = "Flying"
+
+        @Exclude var flyBoost = ""
+
+        @Text(
+            name = "Fly Boost Text",
+            category = "Display",
+            subcategory = "Text"
+        )
+        var flyBoostText = "x boost"
 
         @Text(
             name = "Riding Text",
@@ -219,6 +252,21 @@ object PolySprintConfig : Config(
         )
         var sprint = "Sprinting (Vanilla)"
 
+        init {
+            EventManager.INSTANCE.register(this)
+        }
+
+        @Subscribe
+        fun onTick(e: RenderEvent) {
+            if (e.stage == Stage.START) {
+                flyBoost = if (shouldFlyBoost()) {
+                    "$flying (${flyBoostAmount.toBigDecimal().setScale(2, RoundingMode.HALF_EVEN)}$flyBoostText)"
+                } else {
+                    flying
+                }
+            }
+        }
+
         override fun getLines(lines: MutableList<String>, example: Boolean) {
             getCompleteText(activeDisplay)?.let { lines.add(it) }
         }
@@ -229,7 +277,8 @@ object PolySprintConfig : Config(
             DESCENDINGHELD({ descendingHeld }, { it.capabilities.isFlying && it.isSneaking && PolySprint.sneakHeld }),
             DESCENDINGTOGGLED({ descendingToggled }, { it.capabilities.isFlying && PolySprintConfig.enabled && toggleSprint && toggleSneakState }),
             DESCENDING({ descending }, { it.capabilities.isFlying && it.isSneaking }),
-            FLYING({ flying }, { it.capabilities.isFlying}),
+            FLYING({ flying }, { it.capabilities.isFlying && !shouldFlyBoost() }),
+            FLYBOOST({ flyBoost }, { it.capabilities.isFlying && shouldFlyBoost() }),
             RIDING({ riding }, { it.isRiding }),
             SNEAKHELD({ sneakHeld }, { it.isSneaking && PolySprint.sneakHeld }),
             TOGGLESNEAK({ sneakToggle }, { PolySprintConfig.enabled && toggleSneak && toggleSneakState }),
