@@ -152,18 +152,18 @@ object PolySprintConfig : Config(
             text = "Reset"
         )
         var resetText = Runnable {
-            descendingHeld = "Descending (Key Held)"
-            descendingToggled = "Descending (Toggled)"
-            descending = "Descending (Vanilla)"
+            descendingHeld = "Descending (key held)"
+            descendingToggled = "Descending (toggled)"
+            descending = "Descending (vanilla)"
             flying = "Flying"
             flyBoostText = "x boost"
             riding = "Riding"
-            sneakHeld = "Sneaking (Key Held)"
-            sneakToggle = "Sneaking (Toggled)"
-            sneak = "Sneaking (Vanilla)"
-            sprintHeld = "Sprinting (Key Held)"
-            sprintToggle = "Sprinting (Toggled)"
-            sprint = "Sprinting (Vanilla)"
+            sneakHeld = "Sneaking (key held)"
+            sneakToggle = "Sneaking (toggled)"
+            sneak = "Sneaking (vanilla)"
+            sprintHeld = "Sprinting (key held)"
+            sprintToggle = "Sprinting (toggled)"
+            sprint = "Sprinting (vanilla)"
         }
 
         @Text(
@@ -171,21 +171,21 @@ object PolySprintConfig : Config(
             category = "Display",
             subcategory = "Text"
         )
-        var descendingHeld = "Descending (Key Held)"
+        var descendingHeld = "Descending (key held)"
 
         @Text(
             name = "Descending Toggled Text",
             category = "Display",
             subcategory = "Text"
         )
-        var descendingToggled = "Descending (Toggled)"
+        var descendingToggled = "Descending (toggled)"
 
         @Text(
             name = "Descending Text",
             category = "Display",
             subcategory = "Text"
         )
-        var descending = "Descending (Vanilla)"
+        var descending = "Descending (vanilla)"
 
         @Text(
             name = "Flying Text",
@@ -215,43 +215,43 @@ object PolySprintConfig : Config(
             category = "Display",
             subcategory = "Text"
         )
-        var sneakHeld = "Sneaking (Key Held)"
+        var sneakHeld = "Sneaking (key held)"
 
         @Text(
             name = "Sneak Toggle Text",
             category = "Display",
             subcategory = "Text"
         )
-        var sneakToggle = "Sneaking (Toggled)"
+        var sneakToggle = "Sneaking (toggled)"
 
         @Text(
             name = "Sneaking Text",
             category = "Display",
             subcategory = "Text"
         )
-        var sneak = "Sneaking (Vanilla)"
+        var sneak = "Sneaking (vanilla)"
 
         @Text(
             name = "Sprint Held Text",
             category = "Display",
             subcategory = "Text"
         )
-        var sprintHeld = "Sprinting (Key Held)"
+        var sprintHeld = "Sprinting (key held)"
 
         @Text(
             name = "Sprint Toggle Text",
             category = "Display",
             subcategory = "Text"
         )
-        var sprintToggle = "Sprinting (Toggled)"
+        var sprintToggle = "Sprinting (toggled)"
 
         @Text(
             name = "Sprinting Text",
             category = "Display",
             subcategory = "Text"
         )
-        var sprint = "Sprinting (Vanilla)"
-
+        var sprint = "Sprinting (vanilla)"
+        
         init {
             EventManager.INSTANCE.register(this)
         }
