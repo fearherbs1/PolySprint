@@ -291,10 +291,15 @@ object PolySprintConfig : Config(
                 get() = displayCheck(PolySprint.player!!)
 
             companion object {
+                private val items by lazy {
+                    return@lazy if (KotlinVersion.CURRENT.isAtLeast(1, 9)) entries else values().toList()
+                }
+
+                
                 val ToggleSprintHud.activeDisplay: String?
                     get() {
                         if (PolySprint.player == null) return null
-                        return values().find { it.isActive }?.displayText?.invoke(this)
+                        return items.find { it.isActive }?.displayText?.invoke(this)
                     }
             }
         }
